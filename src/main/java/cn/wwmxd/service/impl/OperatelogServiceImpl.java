@@ -1,10 +1,9 @@
 package cn.wwmxd.service.impl;
 
 import cn.wwmxd.dao.OperatelogDao;
+import cn.wwmxd.entity.Operatelog;
 import cn.wwmxd.service.OperatelogService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import cn.wwmxd.entity.Operatelog;
-import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
  * @author WWMXD
  * @since 2018-03-02 16:25:03
  */
-@Service
 public class OperatelogServiceImpl extends ServiceImpl<OperatelogDao, Operatelog> implements OperatelogService {
 	
 }
