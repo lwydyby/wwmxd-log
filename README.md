@@ -66,9 +66,7 @@ public @interface EnableGameleyLog {
 public class DefaultContentParse implements ContentParser {
     @Override
     public Object getResult(Map<String,Object> feildValues, EnableGameleyLog enableGameleyLog) {
-        if(!feildValues.containsKey("id")){
-           throw  new RuntimeException("未解析到id值，请检查前台传递参数是否正确");
-        }
+        Assert.isTrue(feildValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
         Object result= feildValues.get("id");
         Integer id=0;
         if(result instanceof String){
