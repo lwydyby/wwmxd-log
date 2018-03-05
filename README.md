@@ -68,6 +68,7 @@ public class DefaultContentParse implements ContentParser {
     public Object getResult(Map<String,Object> feildValues, EnableGameleyLog enableGameleyLog) {
         if(!feildValues.containsKey("id")){
             logger.error("未解析到id值，请检查前台传递参数是否正确");
+            return;
         }
         Object result= feildValues.get("id");
         Integer id=0;
@@ -102,8 +103,23 @@ public class ModifyName {
 @DataName(name="操作日期")
 	    private String modifydate;
 ```
+5.在启动类上增加控制注解，只有该注解存在时才会启用该记录
+```
+@SpringBootApplication
+@EnableEurekaClient
+@EnableFeignClients
+@EnableLogAspect
+public class UserServiceApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(UserServiceApplication.class, args);
+	}
+}
+
+```
+
 ### 展示图
 ![输入图片说明](https://gitee.com/uploads/images/2018/0305/115255_5d615e74_1463938.png "深度截图_选择区域_20180305115212.png")
+
 
 ### 建表语句
 ```
