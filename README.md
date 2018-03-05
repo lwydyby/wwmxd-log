@@ -68,6 +68,7 @@ public class DefaultContentParse implements ContentParser {
     public Object getResult(Map<String,Object> feildValues, EnableGameleyLog enableGameleyLog) {
         if(!feildValues.containsKey("id")){
             logger.error("未解析到id值，请检查前台传递参数是否正确");
+            return;
         }
         Object result= feildValues.get("id");
         Integer id=0;
