@@ -104,11 +104,16 @@ public class ModifyName {
 ```
 5.在启动类上增加控制注解，只有该注解存在时才会启用该记录
 ```
+@SpringBootApplication
+@EnableEurekaClient
+@EnableFeignClients
 @EnableLogAspect
 public class UserServiceApplication {
-  psvm{
-   ...}
+	public static void main(String[] args) {
+		SpringApplication.run(UserServiceApplication.class, args);
+	}
 }
+
 ```
 
 ### 展示图
