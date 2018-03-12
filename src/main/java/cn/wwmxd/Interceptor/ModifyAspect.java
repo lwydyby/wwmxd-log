@@ -61,7 +61,12 @@ public class ModifyAspect {
         operateLog.setUsername(BaseContextHandler.getName());
         operateLog.setModifyip(ClientUtil.getClientIp(request));
         operateLog.setModifydate(sdf.format(new Date()));
-        operateLog.setModifyobject(request.getRequestURL().toString());
+        String handelName=enableGameleyLog.handleName();
+        if("".equals(handelName)){
+            operateLog.setModifyobject(request.getRequestURL().toString());
+        }else {
+            operateLog.setModifyobject(handelName);
+        }
         operateLog.setModifyname(enableGameleyLog.name());
         operateLog.setModifycontent("");
         if(ModifyName.UPDATE.equals(enableGameleyLog.name())){

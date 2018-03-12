@@ -37,5 +37,8 @@ public @interface EnableGameleyLog {
      * 前台字段名称
      */
     String[] feildName() default {"id"};
-
+    /**
+     * 具体业务操作名称
+     */
+    String handleName() default "";
 }
