@@ -60,7 +60,7 @@ public @interface EnableGameleyLog {
  * 基础解析类
  * 单表编辑时可以直接使用id来查询
  * 如果为多表复杂逻辑，请自行编写具体实现类
- * @author lw
+ * @author zk
  * @date 2018-03-02
  */
 public class DefaultContentParse implements ContentParser {
