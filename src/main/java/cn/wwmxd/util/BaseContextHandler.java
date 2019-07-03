@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 获取jwt信息类
+ * 获取用户信息,如果有其他方式存储用户请自己修改
+ * @author wwmxd
  */
 public class BaseContextHandler {
     public static ThreadLocal<Map<String, Object>> threadLocal = new ThreadLocal<Map<String, Object>>();

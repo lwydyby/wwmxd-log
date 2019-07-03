@@ -1,7 +1,8 @@
 package cn.wwmxd.Interceptor;
 
 
-import cn.wwmxd.EnableGameleyLog;
+
+import cn.wwmxd.EnableModifyLog;
 import cn.wwmxd.util.ClientUtil;
 import cn.wwmxd.entity.Operatelog;
 import cn.wwmxd.parser.ContentParser;
@@ -51,51 +52,51 @@ public class ModifyAspect {
     @Autowired
     private OperatelogService operatelogService;
 
-    @Before("@annotation(enableGameleyLog)")
-    public void doBefore(JoinPoint joinPoint, EnableGameleyLog enableGameleyLog){
+    @Before("@annotation(EnableModifyLog)")
+    public void doBefore(JoinPoint joinPoint, EnableModifyLog EnableModifyLog){
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         Object info=joinPoint.getArgs()[0];
-        String[] feilds=enableGameleyLog.feildName();
+        String[] feilds=EnableModifyLog.feildName();
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         operateLog.setUsername(BaseContextHandler.getName());
         operateLog.setModifyip(ClientUtil.getClientIp(request));
         operateLog.setModifydate(sdf.format(new Date()));
-        String handelName=enableGameleyLog.handleName();
+        String handelName=EnableModifyLog.handleName();
         if("".equals(handelName)){
             operateLog.setModifyobject(request.getRequestURL().toString());
         }else {
             operateLog.setModifyobject(handelName);
         }
-        operateLog.setModifyname(enableGameleyLog.name());
+        operateLog.setModifyname(EnableModifyLog.name());
         operateLog.setModifycontent("");
-        if(ModifyName.UPDATE.equals(enableGameleyLog.name())){
+        if(ModifyName.UPDATE.equals(EnableModifyLog.name())){
             for(String feild:feilds){
                 feildValues=new HashMap<>();
                 Object result= ReflectionUtils.getFieldValue(info,feild);
                 feildValues.put(feild,result);
             }
             try {
-                ContentParser contentParser= (ContentParser) enableGameleyLog.parseclass().newInstance();
-                oldObject=contentParser.getResult(feildValues,enableGameleyLog);
+                ContentParser contentParser= (ContentParser) EnableModifyLog.parseclass().newInstance();
+                oldObject=contentParser.getResult(feildValues,EnableModifyLog);
             } catch (Exception e) {
                 logger.error("service加载失败:",e);
             }
         }else{
-            if(ModifyName.UPDATE.equals(enableGameleyLog.name())){
+            if(ModifyName.UPDATE.equals(EnableModifyLog.name())){
                 logger.error("id查询失败，无法记录日志");
             }
         }
 
     }
 
-    @AfterReturning(pointcut = "@annotation(enableGameleyLog)",returning = "object")
-    public void doAfterReturing(Object object, EnableGameleyLog enableGameleyLog){
-        if(ModifyName.UPDATE.equals(enableGameleyLog.name())){
+    @AfterReturning(pointcut = "@annotation(enableModifyLog)",returning = "object")
+    public void doAfterReturing(Object object, EnableModifyLog enableModifyLog){
+        if(ModifyName.UPDATE.equals(enableModifyLog.name())){
             ContentParser contentParser= null;
             try {
-                contentParser = (ContentParser) enableGameleyLog.parseclass().newInstance();
-                newObject=contentParser.getResult(feildValues,enableGameleyLog);
+                contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
+                newObject=contentParser.getResult(feildValues,enableModifyLog);
             } catch (Exception e) {
                 logger.error("service加载失败:",e);
             }

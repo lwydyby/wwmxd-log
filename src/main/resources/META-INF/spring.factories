@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cn.wwmxd.config.ModifyAutoConfig,\
+cn.wwmxd.Interceptor.ModifyAspect,\
+cn.wwmxd.service.impl.OperatelogServiceImpl,\
+cn.wwmxd.util.SpringUtil

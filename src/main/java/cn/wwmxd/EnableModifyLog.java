@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface EnableGameleyLog {
+public @interface EnableModifyLog {
     /**
      * 操作的中文说明 可以直接调用ModifyName
      * @return
