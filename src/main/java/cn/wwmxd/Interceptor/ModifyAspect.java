@@ -17,7 +17,6 @@ import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -36,7 +35,6 @@ import java.util.Map;
  */
 @Aspect
 @Component
-@ConditionalOnBean(OperatelogService.class)
 public class ModifyAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(ModifyAspect.class);

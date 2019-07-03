@@ -12,7 +12,6 @@ import java.util.Map;
  *
  *
  * @author lw
- * @date 2018-03-02
  */
 
 public interface ContentParser {
@@ -23,7 +22,7 @@ public interface ContentParser {
      * 获取信息返回查询出的对象
      * @param feildValues 查询条件的参数值
      * @param enableModifyLog 注解
-     * @return
+     * @return 获得的结果
      */
     public Object getResult(Map<String, Object> feildValues, EnableModifyLog enableModifyLog);
 }

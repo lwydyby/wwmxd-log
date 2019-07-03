@@ -8,8 +8,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface DataName {
     /**
-     * 字段名称
-     * @return
+     * @return 字段名称
      */
     String name() default "";
 

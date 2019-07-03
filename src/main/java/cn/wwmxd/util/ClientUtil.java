@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 public class ClientUtil {
 	/**
 	 * 获取客户端真实ip
-	 * @param request
-	 * @return
+	 * @param request  htto请求
+	 * @return 实际ip
 	 */
 	public static String getClientIp(HttpServletRequest request){
 		String ip = request.getHeader("x-forwarded-for");
