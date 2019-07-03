@@ -3,6 +3,16 @@
 ### 简介
    当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中
    2019/07/02 更新：鉴于总有人QQ问我如何使用，增加starter的功能自动加载，可以直接pom中引用直接使用
+   官方库地址：
+   
+```
+ <dependency>
+  <groupId>com.gitee.lwydyby</groupId>
+  <artifactId>wwmxd-log</artifactId>
+  <version>1.0-Release</version>
+</dependency>
+```
+
 
 ### 环境
 - maven
