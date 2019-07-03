@@ -3,6 +3,17 @@
 ### 简介
    当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中
 
+   2019/07/02 更新：鉴于总有人QQ问我如何使用，增加starter的功能自动加载，可以直接pom中引用直接使用
+   官方库地址：
+   
+```
+ <dependency>
+  <groupId>com.gitee.lwydyby</groupId>
+  <artifactId>wwmxd-log</artifactId>
+  <version>1.0-Release</version>
+</dependency>
+```
+
 
 ### 环境
 - maven
@@ -13,13 +24,13 @@
 - fastjson
 - aop
 ### 使用
-1. 在需要记录的方法上使用注解EnableGameleyLog
+1. 在需要记录的方法上使用注解EnableModifyLog
 参数如下：
 ```
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface EnableGameleyLog {
+public @interface EnableModifyLog {
     /**
      * 操作的中文说明 可以直接调用ModifyName
      * @return
@@ -65,7 +76,7 @@ public @interface EnableGameleyLog {
  */
 public class DefaultContentParse implements ContentParser {
     @Override
-    public Object getResult(Map<String,Object> feildValues, EnableGameleyLog enableGameleyLog) {
+    public Object getResult(Map<String,Object> feildValues, EnableModifyLog enableModifyLog) {
         Assert.isTrue(feildValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
         Object result= feildValues.get("id");
         Integer id=0;
@@ -76,7 +87,7 @@ public class DefaultContentParse implements ContentParser {
             id= (Integer) result;
         }
         IService service= null;
-        Class cls=enableGameleyLog.serviceclass();
+        Class cls=enableModifyLog.serviceclass();
         service = (IService) SpringUtil.getBean(cls);
 
         return  service.selectById(id);
@@ -100,19 +111,7 @@ public class ModifyName {
 @DataName(name="操作日期")
 	    private String modifydate;
 ```
-5.在启动类上增加控制注解，只有该注解存在时才会启用该记录
-```
-@SpringBootApplication
-@EnableEurekaClient
-@EnableFeignClients
-@EnableLogAspect
-public class UserServiceApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(UserServiceApplication.class, args);
-	}
-}
 
-```
 
 ### 展示图
 ![输入图片说明](https://gitee.com/uploads/images/2018/0305/115255_5d615e74_1463938.png "深度截图_选择区域_20180305115212.png")
