@@ -10,7 +10,7 @@
  <dependency>
   <groupId>com.gitee.lwydyby</groupId>
   <artifactId>wwmxd-log</artifactId>
-  <version>1.0.2-Release</version>
+  <version>1.0-Release</version>
 </dependency>
 ```
 
