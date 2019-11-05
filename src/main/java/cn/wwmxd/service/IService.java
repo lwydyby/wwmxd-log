@@ -1,5 +1,5 @@
 package cn.wwmxd.service;
 
-public interface IService {
-    Object selectById(Object id);
+public interface IService<T,S> {
+    T selectById(S id);
 }

@@ -1,10 +1,10 @@
 package cn.wwmxd.service;
 
-import cn.wwmxd.entity.Operatelog;
+import cn.wwmxd.entity.OperateLog;
 
 /**
  * @author liwei
  */
 public interface OperatelogService {
-    void insert(Operatelog operatelog);
+    void insert(OperateLog operatelog);
 }

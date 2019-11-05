@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public class DefaultContentParse implements ContentParser {
     @Override
-    public Object getResult(Map<String,Object> feildValues, EnableModifyLog enableModifyLog) {
-        Assert.isTrue(feildValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
-        Object result= feildValues.get("id");
+    public Object getResult(Map<String,Object> fieldValues, EnableModifyLog enableModifyLog) {
+        Assert.isTrue(fieldValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
+        Object result= fieldValues.get("id");
         Integer id=0;
         if(result instanceof String){
             id= Integer.parseInt((String) result);

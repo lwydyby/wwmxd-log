@@ -1,15 +1,18 @@
 package cn.wwmxd.Interceptor;
 
 
-
+import cn.wwmxd.DataName;
 import cn.wwmxd.EnableModifyLog;
-import cn.wwmxd.util.ClientUtil;
-import cn.wwmxd.entity.Operatelog;
+import cn.wwmxd.entity.OperateLog;
 import cn.wwmxd.parser.ContentParser;
 import cn.wwmxd.service.OperatelogService;
 import cn.wwmxd.util.BaseContextHandler;
+import cn.wwmxd.util.ClientUtil;
 import cn.wwmxd.util.ModifyName;
 import cn.wwmxd.util.ReflectionUtils;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,6 +25,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,13 +43,15 @@ public class ModifyAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(ModifyAspect.class);
 
-    private Operatelog operateLog=new Operatelog();
+    private OperateLog operateLog=new OperateLog();
 
     private Object oldObject;
 
     private Object newObject;
 
-    private Map<String,Object> feildValues;
+    private Map<String,Object> fieldValues;
+
+    private Map<String ,Object> oldMap;
 
     @Autowired
     private OperatelogService operatelogService;
@@ -58,25 +64,26 @@ public class ModifyAspect {
         String[] feilds=EnableModifyLog.feildName();
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         operateLog.setUsername(BaseContextHandler.getName());
-        operateLog.setModifyip(ClientUtil.getClientIp(request));
-        operateLog.setModifydate(sdf.format(new Date()));
+        operateLog.setModifyIp(ClientUtil.getClientIp(request));
+        operateLog.setModifyDate(sdf.format(new Date()));
         String handelName=EnableModifyLog.handleName();
         if("".equals(handelName)){
-            operateLog.setModifyobject(request.getRequestURL().toString());
+            operateLog.setModifyObject(request.getRequestURL().toString());
         }else {
-            operateLog.setModifyobject(handelName);
+            operateLog.setModifyObject(handelName);
         }
-        operateLog.setModifyname(EnableModifyLog.name());
-        operateLog.setModifycontent("");
+        operateLog.setModifyName(EnableModifyLog.name());
+        operateLog.setModifyContent("");
         if(ModifyName.UPDATE.equals(EnableModifyLog.name())){
             for(String feild:feilds){
-                feildValues=new HashMap<>();
+                fieldValues=new HashMap<>();
                 Object result= ReflectionUtils.getFieldValue(info,feild);
-                feildValues.put(feild,result);
+                fieldValues.put(feild,result);
             }
             try {
                 ContentParser contentParser= (ContentParser) EnableModifyLog.parseclass().newInstance();
-                oldObject=contentParser.getResult(feildValues,EnableModifyLog);
+                oldObject=contentParser.getResult(fieldValues,EnableModifyLog);
+                oldMap= (Map<String, Object>) objectToMap(oldObject);
             } catch (Exception e) {
                 logger.error("service加载失败:",e);
             }
@@ -94,18 +101,30 @@ public class ModifyAspect {
             ContentParser contentParser= null;
             try {
                 contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
-                newObject=contentParser.getResult(feildValues,enableModifyLog);
+                newObject=contentParser.getResult(fieldValues,enableModifyLog);
             } catch (Exception e) {
                 logger.error("service加载失败:",e);
             }
 
             try {
-                List<Map<String ,Object>> changelist= ReflectionUtils.compareTwoClass(oldObject,newObject);
+                Map<String ,Object> newMap= (Map<String, Object>) objectToMap(newObject);
                 StringBuilder str=new StringBuilder();
-                for(Map<String,Object> map:changelist){
-                    str.append("【"+map.get("name")+"】从【"+map.get("old")+"】改为了【"+map.get("new")+"】;\n");
-                }
-                operateLog.setModifycontent(str.toString());
+                oldMap.forEach((k,v)->{
+                    Object newResult=newMap.get(k);
+                    if(v!=null&&!v.equals(newResult)){
+                        Field field=ReflectionUtils.getAccessibleField(newObject,k);
+                        DataName dataName=field.getAnnotation(DataName.class);
+                        if(dataName!=null){
+                            str.append("【").append(dataName.name()).append("】从【")
+                                    .append(v).append("】改为了【").append(newResult).append("】;\n");
+                        }else {
+                            str.append("【").append(field.getName()).append("】从【")
+                                    .append(v).append("】改为了【").append(newResult).append("】;\n");
+                        }
+                    }
+
+                });
+                operateLog.setModifyContent(str.toString());
 
             } catch (Exception e) {
                 logger.error("比较异常",e);
@@ -116,5 +135,19 @@ public class ModifyAspect {
 
     }
 
+
+    private  Map<?, ?> objectToMap (Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //如果使用JPA请自己打开这条配置
+        //mapper.addMixIn(Object.class, IgnoreHibernatePropertiesInJackson.class);
+        Map<?, ?> mappedObject = mapper.convertValue(obj, Map.class);
+
+        return mappedObject;
+    }
 
 }
