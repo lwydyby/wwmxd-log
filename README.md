@@ -21,8 +21,6 @@
 - maven
 - jdk 1.8
 - spring boot 1.5.5 release
-- mysql 5.0+
-- mybatis-plus
 - fastjson
 - aop
 ### 使用
