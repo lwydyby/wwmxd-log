@@ -1,8 +1,15 @@
  
 
 ### 简介
-   当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中
+   当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中（1.0.3版本开始不再局限于数据库,可以自定义保存方式）
     
+ @Target({ElementType.METHOD})
+ public @interface EnableModifyLog {
+     /**
+          * @return 操作的中文说明 可以直接调用ModifyName
+          */
+         ModifyName modifyType() default ModifyName.UPDATE;
+     
    2019/12/12 更新：优化了operateLog对象存储的信息,增加自定义logService的可操作性。并增加示例代码，方便学习
     
    2019/07/02 更新：鉴于总有人QQ问我如何使用，增加starter的功能自动加载，可以直接pom中引用直接使用
@@ -31,13 +38,6 @@
  ```
  @Documented
  @Retention(RetentionPolicy.RUNTIME)
- @Target({ElementType.METHOD})
- public @interface EnableModifyLog {
-     /**
-          * @return 操作的中文说明 可以直接调用ModifyName
-          */
-         ModifyName modifyType() default ModifyName.UPDATE;
-     
          /**
           * @return 获取编辑信息的解析类，目前为使用id获取，复杂的解析需要自己实现，默认不填写
           *       则使用默认解析类
