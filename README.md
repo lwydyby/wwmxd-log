@@ -26,9 +26,8 @@
 - fastjson
 - aop
 ### 使用
-1. 在需要记录的方法上使用注解EnableModifyLog
- 参数如下：
- ```
+1. 在需要记录的方法上使用注解EnableModifyLog 参数如下：
+ ```java
  @Documented
  @Retention(RetentionPolicy.RUNTIME)
  @Target({ElementType.METHOD})
@@ -67,14 +66,14 @@
  }
 ```
 简单例子：
- ```
+ ```java
  @EnableModifyLog(modifyType = ModifyName.SAVE,serviceclass = DemoService.class)
     public BaseResponse addDemo(@RequestBody Demo demo){
         ...
     }
 ```
 2.编写解析类，默认的解析类为使用id查询，自定义的解析类请继承ContentParser接口，并在注解中赋值
-```
+```java
  
 /**
  * 基础解析类
@@ -114,7 +113,7 @@ public interface IService<T,S> {
 
 4.自行根据需求实现OperatelogService接口（jpa/mybatis都可以）
 
-```
+```java
 public interface OperatelogService {
     void insert(Operatelog operatelog);
 }
@@ -122,14 +121,14 @@ public interface OperatelogService {
 
 
 5.默认的操作方式有：
- ```
+ ```java
 public enum  ModifyName {
     SAVE,UPDATE,DELETE,GET;
 }
 ```
 6.如需记录操作字段中文请在entity中使用DataName注解
  如：
- ```
+ ```java
 @DataName(name="操作日期")
 	    private String modifydate;
 ```
