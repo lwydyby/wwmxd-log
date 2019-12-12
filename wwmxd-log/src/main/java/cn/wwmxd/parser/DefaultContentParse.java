@@ -18,18 +18,14 @@ public class DefaultContentParse implements ContentParser {
     public Object getResult(Map<String,Object> fieldValues, EnableModifyLog enableModifyLog) {
         Assert.isTrue(fieldValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
         Object result= fieldValues.get("id");
-        Integer id=0;
-        if(result instanceof String){
-            id= Integer.parseInt((String) result);
-
-        }else if(result instanceof Integer){
-            id= (Integer) result;
+        Class idType=enableModifyLog.idType();
+        if(idType.isInstance(result)){
+            Class cls=enableModifyLog.serviceclass();
+            IService service = (IService) SpringUtil.getBean(cls);
+            return  service.selectById(idType.cast(result));
+        }else {
+            throw new RuntimeException("请核实id type");
         }
-        IService service= null;
-        Class cls=enableModifyLog.serviceclass();
-        service = (IService) SpringUtil.getBean(cls);
-
-        return  service.selectById(id);
     }
 
 

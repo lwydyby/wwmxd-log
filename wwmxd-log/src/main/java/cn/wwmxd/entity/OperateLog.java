@@ -2,14 +2,17 @@ package cn.wwmxd.entity;
 
 
 import cn.wwmxd.DataName;
+import cn.wwmxd.util.ModifyName;
 import lombok.Data;
+import lombok.ToString;
 
 
 /**
  * @author WWMXD
  */
 @Data
-public class OperateLog{
+@ToString
+public class OperateLog {
     private static final long serialVersionUID = 1L;
     //
     @DataName(name = "")
@@ -25,7 +28,7 @@ public class OperateLog{
 
     //操作名词
     @DataName(name = "操作名词")
-    private String modifyName;
+    private ModifyName modifyName;
 
     //操作对象
     @DataName(name = "操作对象")
@@ -40,6 +43,10 @@ public class OperateLog{
 
     @DataName(name = "IP")
     private String modifyIp;
+
+    private Object oldObject;
+
+    private Object newObject;
 
 
 
