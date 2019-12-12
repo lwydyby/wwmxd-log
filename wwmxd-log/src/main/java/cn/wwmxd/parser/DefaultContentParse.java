@@ -2,10 +2,10 @@ package cn.wwmxd.parser;
 
 import cn.wwmxd.EnableModifyLog;
 import cn.wwmxd.service.IService;
+import cn.wwmxd.util.ReflectionUtils;
 import cn.wwmxd.util.SpringUtil;
+import org.aspectj.lang.JoinPoint;
 import org.springframework.util.Assert;
-
-import java.util.Map;
 
 /**
  * 基础解析类
@@ -15,9 +15,10 @@ import java.util.Map;
  */
 public class DefaultContentParse implements ContentParser {
     @Override
-    public Object getResult(Map<String,Object> fieldValues, EnableModifyLog enableModifyLog) {
-        Assert.isTrue(fieldValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
-        Object result= fieldValues.get("id");
+    public Object getResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+        Object info = joinPoint.getArgs()[0];
+        Object result = ReflectionUtils.getFieldValue(info, "id");
+        Assert.notNull(result,"未解析到id值，请检查前台传递参数是否正确");
         Class idType=enableModifyLog.idType();
         if(idType.isInstance(result)){
             Class cls=enableModifyLog.serviceclass();

@@ -44,8 +44,6 @@ public class ModifyAspect {
 
     private OperateLog operateLog = new OperateLog();
 
-    private Object oldObject;
-
     private Object newObject;
 
     private Map<String, Object> fieldValues;
@@ -55,38 +53,33 @@ public class ModifyAspect {
     @Autowired
     private OperatelogService operatelogService;
 
-    @Before("@annotation(EnableModifyLog)")
-    public void doBefore(JoinPoint joinPoint, EnableModifyLog EnableModifyLog) {
+    private JoinPoint point;
+
+    @Before("@annotation(enableModifyLog)")
+    public void doBefore(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        Object info=null;
-        if(joinPoint.getArgs().length!=0){
-            info = joinPoint.getArgs()[0];
-        }
-        String[] feilds = EnableModifyLog.feildName();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         operateLog.setUsername(BaseContextHandler.getName());
         operateLog.setModifyIp(ClientUtil.getClientIp(request));
         operateLog.setModifyDate(sdf.format(new Date()));
-        String handelName = EnableModifyLog.handleName();
+        String handelName = enableModifyLog.handleName();
         if ("".equals(handelName)) {
             operateLog.setModifyObject(request.getRequestURL().toString());
         } else {
             operateLog.setModifyObject(handelName);
         }
-        operateLog.setModifyName(EnableModifyLog.modifyType());
+        operateLog.setModifyName(enableModifyLog.modifyType());
         operateLog.setModifyContent("");
-        if (ModifyName.UPDATE.equals(EnableModifyLog.modifyType())) {
-            for (String feild : feilds) {
-                fieldValues = new HashMap<>();
-                Object result = ReflectionUtils.getFieldValue(info, feild);
-                fieldValues.put(feild, result);
-            }
+        this.point=joinPoint;
+        if (ModifyName.UPDATE.equals(enableModifyLog.modifyType())) {
             try {
-                ContentParser contentParser = (ContentParser) EnableModifyLog.parseclass().newInstance();
-                oldObject = contentParser.getResult(fieldValues, EnableModifyLog);
+                ContentParser contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
+                Object oldObject = contentParser.getResult(joinPoint, enableModifyLog);
                 operateLog.setOldObject(oldObject);
-                oldMap = (Map<String, Object>) objectToMap(oldObject);
+                if (enableModifyLog.needDefaultCompare()) {
+                    oldMap = (Map<String, Object>) objectToMap(oldObject);
+                }
             } catch (Exception e) {
                 logger.error("service加载失败:", e);
             }
@@ -99,7 +92,7 @@ public class ModifyAspect {
             ContentParser contentParser = null;
             try {
                 contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
-                newObject = contentParser.getResult(fieldValues, enableModifyLog);
+                newObject = contentParser.getResult(point, enableModifyLog);
                 operateLog.setNewObject(newObject);
             } catch (Exception e) {
                 logger.error("service加载失败:", e);

@@ -1,6 +1,7 @@
 package cn.wwmxd.parser;
 
 import cn.wwmxd.EnableModifyLog;
+import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +21,10 @@ public interface ContentParser {
 
     /**
      * 获取信息返回查询出的对象
-     * @param fieldValues 查询条件的参数值
+     * @param joinPoint 查询条件的参数
      * @param enableModifyLog 注解
      * @return 获得的结果
      */
-    public Object getResult(Map<String, Object> fieldValues, EnableModifyLog enableModifyLog);
+    public Object getResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog);
 }
 
