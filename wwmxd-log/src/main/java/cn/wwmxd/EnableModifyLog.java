@@ -44,5 +44,8 @@ public @interface EnableModifyLog {
      */
     boolean needDefaultCompare() default false;
 
+    /**
+     * @return id的类型
+     */
     Class idType() default String.class;
 }
