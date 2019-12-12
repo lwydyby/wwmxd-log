@@ -6,10 +6,7 @@ import cn.wwmxd.EnableModifyLog;
 import cn.wwmxd.entity.OperateLog;
 import cn.wwmxd.parser.ContentParser;
 import cn.wwmxd.service.OperatelogService;
-import cn.wwmxd.util.BaseContextHandler;
-import cn.wwmxd.util.ClientUtil;
-import cn.wwmxd.util.ModifyName;
-import cn.wwmxd.util.ReflectionUtils;
+import cn.wwmxd.util.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -46,14 +43,15 @@ public class ModifyAspect {
 
     private Object newObject;
 
-    private Map<String, Object> fieldValues;
-
     private Map<String, Object> oldMap;
 
     @Autowired
     private OperatelogService operatelogService;
 
     private JoinPoint point;
+
+    @Autowired
+    private SpringUtil springUtil;
 
     @Before("@annotation(enableModifyLog)")
     public void doBefore(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
@@ -74,7 +72,7 @@ public class ModifyAspect {
         this.point=joinPoint;
         if (ModifyName.UPDATE.equals(enableModifyLog.modifyType())) {
             try {
-                ContentParser contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
+                ContentParser contentParser = (ContentParser) SpringUtil.getBean(enableModifyLog.parseclass());
                 Object oldObject = contentParser.getResult(joinPoint, enableModifyLog);
                 operateLog.setOldObject(oldObject);
                 if (enableModifyLog.needDefaultCompare()) {

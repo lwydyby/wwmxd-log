@@ -5,6 +5,7 @@ import cn.wwmxd.service.IService;
 import cn.wwmxd.util.ReflectionUtils;
 import cn.wwmxd.util.SpringUtil;
 import org.aspectj.lang.JoinPoint;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.util.Assert;
  * 如果为多表复杂逻辑，请自行编写具体实现类
  * @author lw
  */
+@Component
 public class DefaultContentParse implements ContentParser {
     @Override
     public Object getResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
