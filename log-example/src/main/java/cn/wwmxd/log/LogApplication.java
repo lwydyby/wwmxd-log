@@ -10,9 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableOperateLog
 public class LogApplication {
 
-    @Autowired
-    SpringUtil springUtil;
-
     public static void main(String[] args) {
         SpringApplication.run(LogApplication.class, args);
     }
