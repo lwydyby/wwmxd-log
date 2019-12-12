@@ -134,7 +134,9 @@ public enum  ModifyName {
 ![输入图片说明](https://gitee.com/uploads/images/2018/0305/115255_5d615e74_1463938.png "深度截图_选择区域_20180305115212.png")
 
 
-### 建表语句
+### 建表语句 
+
+仅供参考,可以自定义自己的
 ```
 DROP TABLE IF EXISTS `operatelog`;
 CREATE TABLE `operatelog`  (
