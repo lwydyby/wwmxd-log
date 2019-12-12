@@ -5,7 +5,8 @@
 	<groupId>com.gitee.lwydyby</groupId>
 	<artifactId>wwmxd-log</artifactId>
 	<version>1.0.3-Release</version>
-
+	<description>operate log</description>
+	<url>https://gitee.com/lwydyby/wwmxd-log</url>
 	<licenses>
 		<license>
 			<name>Apache 2</name>
