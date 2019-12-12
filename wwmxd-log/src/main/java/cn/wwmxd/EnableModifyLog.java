@@ -31,10 +31,6 @@ public @interface EnableModifyLog {
     Class serviceclass() default IService.class;
 
     /**
-     * @return 前台字段名称
-     */
-    String[] feildName() default {"id"};
-    /**
      * @return 具体业务操作名称
      */
     String handleName() default "";

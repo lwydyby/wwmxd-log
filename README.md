@@ -12,7 +12,7 @@
  <dependency>
   <groupId>com.gitee.lwydyby</groupId>
   <artifactId>wwmxd-log</artifactId>
-  <version>1.0.3-Release</version>
+  <version>1.0.4-Release</version>
 </dependency>
 ```
 
@@ -50,10 +50,6 @@
          Class serviceclass() default IService.class;
      
          /**
-          * @return 前台字段名称
-          */
-         String[] feildName() default {"id"};
-         /**
           * @return 具体业务操作名称
           */
          String handleName() default "";
@@ -88,19 +84,20 @@
  * @date 2018-03-02
  */
 public class DefaultContentParse implements ContentParser {
-    @Override
-    public Object getResult(Map<String,Object> feildValues, EnableModifyLog enableModifyLog) {
-        Assert.isTrue(fieldValues.containsKey("id"),"未解析到id值，请检查前台传递参数是否正确");
-               Object result= fieldValues.get("id");
-               Class idType=enableModifyLog.idType();
-               if(idType.isInstance(result)){
-                   Class cls=enableModifyLog.serviceclass();
-                   IService service = (IService) SpringUtil.getBean(cls);
-                   return  service.selectById(idType.cast(result));
-               }else {
-                   throw new RuntimeException("请核实id type");
-               }
-    }
+      @Override
+        public Object getResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+            Object info = joinPoint.getArgs()[0];
+            Object result = ReflectionUtils.getFieldValue(info, "id");
+            Assert.notNull(result,"未解析到id值，请检查前台传递参数是否正确");
+            Class idType=enableModifyLog.idType();
+            if(idType.isInstance(result)){
+                Class cls=enableModifyLog.serviceclass();
+                IService service = (IService) SpringUtil.getBean(cls);
+                return  service.selectById(idType.cast(result));
+            }else {
+                throw new RuntimeException("请核实id type");
+            }
+        }
 
 
 }
