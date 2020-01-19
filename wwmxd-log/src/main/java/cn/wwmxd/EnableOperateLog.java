@@ -9,9 +9,6 @@ import java.lang.annotation.*;
 
 /**
  * @author liwei
- * @title: EnableLog
- * @projectName wwmxd-log
- * @description: TODO
  * @date 2019-12-12 16:04
  */
 

@@ -141,7 +141,8 @@ public class ReflectionUtils {
 	/**
 	 * 对比两个数据是否内容相同
 	 *
-	 * @param  object1,object2  比较对象,12
+	 * @param  object1  比较对象1
+	 * @param  object2  比较对象2
 	 * @return boolean类型
 	 */
 	public static boolean compareTwo(Object object1,Object object2){

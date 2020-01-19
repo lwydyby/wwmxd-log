@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Import;
 
 /**
  * @author liwei
- * @title: LogStarterAutoConfiguration
- * @projectName wwmxd-log
- * @description: TODO
  * @date 2019-12-12 15:59
  */
 @Configuration
