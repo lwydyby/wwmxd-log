@@ -6,7 +6,10 @@
    2019/12/12 更新：优化了operateLog对象存储的信息,增加自定义logService的可操作性。并增加示例代码，方便上手
     
    2019/07/02 更新：鉴于总有人QQ问我如何使用，增加starter的功能自动加载，可以直接pom中引用直接使用
-   官方库地址：
+   
+   2020/01/19 更新: 解决并发问题,同时项目转至github(后边和gitee同步更新),使用github actions自动上传至maven官方仓库
+   
+   github地址： https://github.com/lwydyby/wwmxd-log
    
 ```
  <dependency>
