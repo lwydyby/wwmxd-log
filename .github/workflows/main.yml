@@ -21,7 +21,7 @@ jobs:
         run: brew install gnupg
 
       - name: Release Maven package
-        uses: samuelmeuli/action-maven-publish@v1
+        uses: samuelmeuli/action-maven-publish@v1.3.1
         with:
           gpg_private_key: ${{ secrets.gpg_private_key }}
           gpg_passphrase: ${{ secrets.gpg_passphrase }}
