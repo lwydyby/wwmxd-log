@@ -20,13 +20,11 @@ jobs:
       - name: Install GPG
         run: brew install gnupg
 
-      ## IMPORTANT: this creates the 'build' installation folder and must be the FIRST action!
-      ## Deploy in Maven repository
-      - name: Copy GPG Private key
-        run: echo "${{ secrets.gpg_private_key }}" > private-key.txt && gpg --import --no-tty --batch --yes private-key.txt
-      - name: Deploy to Maven Central respository
-        env:
-          MAVEN_NEXUS_USER: ${{ secrets.nexus_username }}
-          MAVEN_NEXUS_PASSWORD: ${{ secrets.nexus_password }}
-        run: mvn clean deploy -Dgpg.passphrase=${{ secrets.gpg_passphrase }} -DskipTests  -P deploy
-
+      - name: Release Maven package
+        uses: samuelmeuli/action-maven-publish@v1.3.1
+        with:
+          gpg_private_key: ${{ secrets.gpg_private_key }}
+          gpg_passphrase: ${{ secrets.gpg_passphrase }}
+          nexus_username: ${{ secrets.nexus_username }}
+          nexus_password: ${{ secrets.nexus_password }}
+          directory: ./wwmxd-log
