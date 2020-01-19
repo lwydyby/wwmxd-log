@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
@@ -39,22 +41,15 @@ public class ModifyAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(ModifyAspect.class);
 
-    private OperateLog operateLog = new OperateLog();
-
-    private Object newObject;
-
-    private Map<String, Object> oldMap;
 
     @Autowired
     private OperatelogService operatelogService;
 
-    private JoinPoint point;
 
-    @Autowired
-    private SpringUtil springUtil;
-
-    @Before("@annotation(enableModifyLog)")
-    public void doBefore(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+    @Around("@annotation(enableModifyLog)")
+    public void around(ProceedingJoinPoint joinPoint,EnableModifyLog enableModifyLog) throws  Throwable{
+        Map<String, Object> oldMap=new HashMap<>();
+        OperateLog operateLog = new OperateLog();
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -69,7 +64,6 @@ public class ModifyAspect {
         }
         operateLog.setModifyName(enableModifyLog.modifyType());
         operateLog.setModifyContent("");
-        this.point=joinPoint;
         if (ModifyName.UPDATE.equals(enableModifyLog.modifyType())) {
             try {
                 ContentParser contentParser = (ContentParser) SpringUtil.getBean(enableModifyLog.parseclass());
@@ -82,15 +76,14 @@ public class ModifyAspect {
                 logger.error("service加载失败:", e);
             }
         }
-    }
-
-    @AfterReturning(pointcut = "@annotation(enableModifyLog)", returning = "object")
-    public void doAfterReturing(Object object, EnableModifyLog enableModifyLog) {
+        //执行service
+        Object object=joinPoint.proceed();
         if (ModifyName.UPDATE.equals(enableModifyLog.modifyType())) {
             ContentParser contentParser = null;
+            Object newObject = null;
             try {
                 contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
-                newObject = contentParser.getResult(point, enableModifyLog);
+                newObject = contentParser.getResult(joinPoint, enableModifyLog);
                 operateLog.setNewObject(newObject);
             } catch (Exception e) {
                 logger.error("service加载失败:", e);
@@ -100,10 +93,11 @@ public class ModifyAspect {
                 try {
                     Map<String, Object> newMap = (Map<String, Object>) objectToMap(newObject);
                     StringBuilder str = new StringBuilder();
+                    Object finalNewObject = newObject;
                     oldMap.forEach((k, v) -> {
                         Object newResult = newMap.get(k);
                         if (v != null && !v.equals(newResult)) {
-                            Field field = ReflectionUtils.getAccessibleField(newObject, k);
+                            Field field = ReflectionUtils.getAccessibleField(finalNewObject, k);
                             DataName dataName = field.getAnnotation(DataName.class);
                             if (dataName != null) {
                                 str.append("【").append(dataName.name()).append("】从【")
@@ -126,8 +120,6 @@ public class ModifyAspect {
             operateLog.setNewObject(object);
         }
         operatelogService.insert(operateLog);
-
-
     }
 
 
