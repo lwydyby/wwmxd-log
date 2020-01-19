@@ -8,7 +8,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-18.04
+    runs-on: macos-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
@@ -17,6 +17,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Install GPG
+        run: brew install gnupg
 
       - name: Release Maven package
         uses: samuelmeuli/action-maven-publish@v1
