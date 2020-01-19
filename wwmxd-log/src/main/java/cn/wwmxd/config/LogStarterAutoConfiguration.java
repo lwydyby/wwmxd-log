@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 
 /**
  * @author liwei
- * @date 2019-12-12 15:59
  */
 @Configuration
 @Import({ModifyAspect.class, SpringUtil.class, DefaultContentParse.class})
