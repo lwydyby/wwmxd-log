@@ -12,7 +12,7 @@
  <dependency>
   <groupId>com.gitee.lwydyby</groupId>
   <artifactId>wwmxd-log</artifactId>
-  <version>1.0.5-Release</version>
+  <version>${latest.version}</version>
 </dependency>
 ```
 
