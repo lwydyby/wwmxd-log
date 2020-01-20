@@ -4,7 +4,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ### 简介
-   当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中（1.0.3版本开始不再局限于数据库,可以自定义保存方式）
+   当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中（1.0.3版本开始不再局限于数据库,可以自定义保存方式）1.1.0之后改为springboot2.0 
+   springboot 1.0版本请使用1.0.9版本
    
    2020/01/20 更新：增加默认缓存功能，防止每次请求都需要查库，如果需要缓存建议参考默认缓存自定义写parser并开启自己的缓存（毕竟一般的业务系统都会有自己的缓存实现）
    
@@ -30,7 +31,7 @@
 ### 环境
 - maven
 - jdk 1.8
-- spring boot 1.5.5 release
+- spring boot 2.1.5 release
 - fastjson
 - aop
 ### 使用
@@ -70,6 +71,10 @@
           * @return id的类型
           */
          Class idType() default String.class;
+         /**
+             * @return 是否使用默认本地缓存
+             */
+         boolean defaultCache() default false;
  
  }
 ```
