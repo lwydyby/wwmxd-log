@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <groupId>com.gitee.lwydyby</groupId>
-    <version>1.0.8-Release</version>
+    <version>1.0.9-Release</version>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>log-example</artifactId>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.gitee.lwydyby</groupId>
             <artifactId>wwmxd-log</artifactId>
-            <version>1.0.8-Release</version>
+            <version>1.0.9-Release</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

@@ -12,7 +12,6 @@
     <modules>
         <module>./wwmxd-log</module>
         <module>./log-example</module>
-
     </modules>
 
     <profiles>

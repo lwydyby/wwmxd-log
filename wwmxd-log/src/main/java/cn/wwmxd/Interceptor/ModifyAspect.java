@@ -5,6 +5,7 @@ import cn.wwmxd.DataName;
 import cn.wwmxd.EnableModifyLog;
 import cn.wwmxd.entity.OperateLog;
 import cn.wwmxd.parser.ContentParser;
+import cn.wwmxd.parser.DefaultContentParse;
 import cn.wwmxd.service.OperatelogService;
 import cn.wwmxd.util.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -20,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -44,6 +47,8 @@ public class ModifyAspect {
 
     @Autowired
     private OperatelogService operatelogService;
+    @Autowired
+    private DefaultContentParse defaultContentParse;
 
 
     @Around("@annotation(enableModifyLog)")
@@ -52,10 +57,13 @@ public class ModifyAspect {
         OperateLog operateLog = new OperateLog();
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        operateLog.setUsername(BaseContextHandler.getName());
+        //当不传默认modifyType时 根据Method类型自动匹配
+        setAnnotationType(request,enableModifyLog);
+
+        // fixme 1.0.9开始不再提供自动存入username功能,请在存储实现类中自行存储
         operateLog.setModifyIp(ClientUtil.getClientIp(request));
-        operateLog.setModifyDate(sdf.format(new Date()));
+        operateLog.setModifyDate(new Date());
+        //如果不传,则默认存入请求的URI
         String handelName = enableModifyLog.handleName();
         if ("".equals(handelName)) {
             operateLog.setModifyObject(request.getRequestURL().toString());
@@ -76,52 +84,61 @@ public class ModifyAspect {
                 logger.error("service加载失败:", e);
             }
         }
-        //执行service
+        //执行service TODO 是否需要Catch Exception
         Object object=joinPoint.proceed();
         if (ModifyName.UPDATE.equals(enableModifyLog.modifyType())) {
-            ContentParser contentParser = null;
-            Object newObject = null;
+            ContentParser contentParser;
             try {
-                contentParser = (ContentParser) enableModifyLog.parseclass().newInstance();
-                newObject = contentParser.getResult(joinPoint, enableModifyLog);
-                operateLog.setNewObject(newObject);
+                contentParser = (ContentParser) SpringUtil.getBean(enableModifyLog.parseclass());
+                object = contentParser.getResult(joinPoint, enableModifyLog);
+                operateLog.setNewObject(object);
             } catch (Exception e) {
                 logger.error("service加载失败:", e);
             }
             //默认不进行比较，可以自己在logService中自定义实现，降低对性能的影响
             if (enableModifyLog.needDefaultCompare()) {
-                try {
-                    Map<String, Object> newMap = (Map<String, Object>) objectToMap(newObject);
-                    StringBuilder str = new StringBuilder();
-                    Object finalNewObject = newObject;
-                    oldMap.forEach((k, v) -> {
-                        Object newResult = newMap.get(k);
-                        if (v != null && !v.equals(newResult)) {
-                            Field field = ReflectionUtils.getAccessibleField(finalNewObject, k);
-                            DataName dataName = field.getAnnotation(DataName.class);
-                            if (dataName != null) {
-                                str.append("【").append(dataName.name()).append("】从【")
-                                        .append(v).append("】改为了【").append(newResult).append("】;\n");
-                            } else {
-                                str.append("【").append(field.getName()).append("】从【")
-                                        .append(v).append("】改为了【").append(newResult).append("】;\n");
-                            }
-                        }
-
-                    });
-                    operateLog.setModifyContent(str.toString());
-
-                } catch (Exception e) {
-                    logger.error("比较异常", e);
-                }
+               operateLog.setModifyContent(defaultDealUpdate(object,oldMap));
             }
-        }else if(enableModifyLog.modifyType().equals(ModifyName.SAVE)){
-            //如果是创建则把返回的对象存储到log中
+            //如果使用默认缓存 则需要更新到最新的数据
+            if(enableModifyLog.defaultCache()
+                    &&enableModifyLog.parseclass().equals(DefaultContentParse.class)){
+                defaultContentParse.updateCache(joinPoint,enableModifyLog,object);
+            }
+        }else{
+            //除了更新外,默认把返回的对象存储到log中
             operateLog.setNewObject(object);
         }
+
         operatelogService.insert(operateLog);
     }
 
+    private String defaultDealUpdate(Object newObject,Map<String, Object> oldMap){
+        try {
+            Map<String, Object> newMap = (Map<String, Object>) objectToMap(newObject);
+            StringBuilder str = new StringBuilder();
+            Object finalNewObject = newObject;
+            oldMap.forEach((k, v) -> {
+                Object newResult = newMap.get(k);
+                if (v != null && !v.equals(newResult)) {
+                    Field field = ReflectionUtils.getAccessibleField(finalNewObject, k);
+                    DataName dataName = field.getAnnotation(DataName.class);
+                    if (dataName != null) {
+                        str.append("【").append(dataName.name()).append("】从【")
+                                .append(v).append("】改为了【").append(newResult).append("】;\n");
+                    } else {
+                        str.append("【").append(field.getName()).append("】从【")
+                                .append(v).append("】改为了【").append(newResult).append("】;\n");
+                    }
+                }
+
+            });
+            return str.toString();
+
+        } catch (Exception e) {
+            logger.error("比较异常", e);
+            throw new RuntimeException("比较异常",e);
+        }
+    }
 
     private Map<?, ?> objectToMap(Object obj) {
         if (obj == null) {
@@ -135,6 +152,23 @@ public class ModifyAspect {
         Map<?, ?> mappedObject = mapper.convertValue(obj, Map.class);
 
         return mappedObject;
+    }
+
+    private void setAnnotationType(HttpServletRequest request,EnableModifyLog modifyLog){
+        if(!modifyLog.modifyType().equals(ModifyName.NONE)){
+            return;
+        }
+        String method=request.getMethod();
+        if(RequestMethod.GET.name().equalsIgnoreCase(method)){
+            ReflectAnnotationUtil.updateValue(modifyLog,"modifyType",ModifyName.GET);
+        }else if(RequestMethod.POST.name().equalsIgnoreCase(method)){
+            ReflectAnnotationUtil.updateValue(modifyLog,"modifyType",ModifyName.SAVE);
+        }else if(RequestMethod.PUT.name().equalsIgnoreCase(method)){
+            ReflectAnnotationUtil.updateValue(modifyLog,"modifyType",ModifyName.UPDATE);
+        }else if(RequestMethod.DELETE.name().equalsIgnoreCase(method)){
+            ReflectAnnotationUtil.updateValue(modifyLog,"modifyType",ModifyName.DELETE);
+        }
+
     }
 
 }

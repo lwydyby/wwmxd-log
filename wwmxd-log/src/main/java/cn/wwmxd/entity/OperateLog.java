@@ -6,6 +6,8 @@ import cn.wwmxd.util.ModifyName;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.Date;
+
 
 /**
  * @author WWMXD
@@ -24,7 +26,7 @@ public class OperateLog {
 
     //操作日期
     @DataName(name = "操作日期")
-    private String modifyDate;
+    private Date modifyDate;
 
     //操作名词
     @DataName(name = "操作名词")

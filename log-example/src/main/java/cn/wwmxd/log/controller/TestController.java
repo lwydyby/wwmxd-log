@@ -20,8 +20,8 @@ public class TestController {
 
     @GetMapping("/test")
     @EnableModifyLog(modifyType = ModifyName.GET,handleName = "查询",needDefaultCompare=true)
-    public String test(){
-        return "hello world";
+    public Example test(){
+        return new Example();
     }
 
     @PostMapping("/test")
@@ -35,16 +35,16 @@ public class TestController {
 
     @PutMapping("/test")
     @EnableModifyLog(modifyType = ModifyName.UPDATE,serviceclass= ExampleService.class,handleName = "更新",needDefaultCompare=true)
-    public String updateTest(@RequestBody Example example){
+    public Example updateTest(@RequestBody Example example){
         System.out.println(example);
-        return "update success";
+        return example;
     }
 
     @DeleteMapping("/test/{id}")
     @EnableModifyLog(modifyType = ModifyName.DELETE,serviceclass= ExampleService.class,handleName = "删除",needDefaultCompare=true)
-    public String updateTest(@PathVariable String id){
+    public Example updateTest(@PathVariable String id){
         System.out.println(id);
-        return "delete success";
+        return new Example();
     }
 
 }

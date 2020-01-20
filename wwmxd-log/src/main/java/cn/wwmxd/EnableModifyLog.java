@@ -15,9 +15,9 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 public @interface EnableModifyLog {
     /**
-     * @return 操作的中文说明 可以直接调用ModifyName
+     * @return 操作的类型 可以直接调用ModifyName 不传时根据METHOD自动确定
      */
-    ModifyName modifyType() default ModifyName.UPDATE;
+    ModifyName modifyType() default ModifyName.NONE;
 
     /**
      * @return 获取编辑信息的解析类，目前为使用id获取，复杂的解析需要自己实现，默认不填写
@@ -44,4 +44,8 @@ public @interface EnableModifyLog {
      * @return id的类型
      */
     Class idType() default String.class;
+    /**
+     * @return 是否使用默认本地缓存
+     */
+    boolean defaultCache() default false;
 }
