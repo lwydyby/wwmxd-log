@@ -21,14 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultContentParse implements ContentParser {
 
     @Override
-    public Object getResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+    public Object getOldResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
         Object info = joinPoint.getArgs()[0];
         Object id = ReflectionUtils.getFieldValue(info, "id");
         Assert.notNull(id,"未解析到id值，请检查前台传递参数是否正确");
         Class idType=enableModifyLog.idType();
         if(idType.isInstance(id)){
-            //如果开启缓存,则不再进行查库
-            String key=enableModifyLog.handleName()+id;
             Class cls=enableModifyLog.serviceclass();
             IService service = (IService) SpringUtil.getBean(cls);
             Object result=service.selectById(idType.cast(id));
@@ -38,6 +36,10 @@ public class DefaultContentParse implements ContentParser {
         }
     }
 
+    @Override
+    public Object getNewResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+        return getOldResult(joinPoint,enableModifyLog);
+    }
 
 
 }

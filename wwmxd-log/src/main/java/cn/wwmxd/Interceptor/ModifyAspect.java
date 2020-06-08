@@ -75,7 +75,7 @@ public class ModifyAspect {
         if (ModifyName.UPDATE.equals(enableModifyLog.modifyType())) {
             try {
                 ContentParser contentParser = (ContentParser) SpringUtil.getBean(enableModifyLog.parseclass());
-                Object oldObject = contentParser.getResult(joinPoint, enableModifyLog);
+                Object oldObject = contentParser.getOldResult(joinPoint, enableModifyLog);
                 operateLog.setOldObject(oldObject);
                 if (enableModifyLog.needDefaultCompare()) {
                     oldMap = (Map<String, Object>) objectToMap(oldObject);
@@ -90,7 +90,7 @@ public class ModifyAspect {
             ContentParser contentParser;
             try {
                 contentParser = (ContentParser) SpringUtil.getBean(enableModifyLog.parseclass());
-                object = contentParser.getResult(joinPoint, enableModifyLog);
+                object = contentParser.getNewResult(joinPoint, enableModifyLog);
                 operateLog.setNewObject(object);
             } catch (Exception e) {
                 logger.error("service加载失败:", e);
