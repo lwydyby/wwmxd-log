@@ -7,6 +7,8 @@
    当对业务内容进行编辑时，记录何人何时何ip进行何种改动（包含了原值和修改后的值），保存到数据库中（1.0.3版本开始不再局限于数据库,可以自定义保存方式）1.1.0之后改为springboot2.0 
    springboot 1.0版本请使用1.0.9版本
    
+   2020/06/08 更新：移除了错误的缓存实现，并完善了接口方法设计,将获取新旧数据的方法拆分，以方便缓存的实现，并删除了默认缓存实现，请自行实现缓存
+   
    2020/01/20 更新：移除fastjson依赖，进一步减少多余的依赖,增加默认缓存功能，防止每次请求都需要查库，如果需要缓存建议参考默认缓存自定义写parser并开启自己的缓存（毕竟一般的业务系统都会有自己的缓存实现）
    
    2020/01/19 更新: 解决并发问题,同时项目转至github(后边和gitee同步更新),使用github actions自动上传至maven官方仓库
@@ -95,20 +97,26 @@
  * @date 2018-03-02
  */
 public class DefaultContentParse implements ContentParser {
-      @Override
-        public Object getResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
-            Object info = joinPoint.getArgs()[0];
-            Object result = ReflectionUtils.getFieldValue(info, "id");
-            Assert.notNull(result,"未解析到id值，请检查前台传递参数是否正确");
-            Class idType=enableModifyLog.idType();
-            if(idType.isInstance(result)){
-                Class cls=enableModifyLog.serviceclass();
-                IService service = (IService) SpringUtil.getBean(cls);
-                return  service.selectById(idType.cast(result));
-            }else {
-                throw new RuntimeException("请核实id type");
-            }
-        }
+       @Override
+          public Object getOldResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+              Object info = joinPoint.getArgs()[0];
+              Object id = ReflectionUtils.getFieldValue(info, "id");
+              Assert.notNull(id,"未解析到id值，请检查前台传递参数是否正确");
+              Class idType=enableModifyLog.idType();
+              if(idType.isInstance(id)){
+                  Class cls=enableModifyLog.serviceclass();
+                  IService service = (IService) SpringUtil.getBean(cls);
+                  Object result=service.selectById(idType.cast(id));
+                  return  result;
+              }else {
+                  throw new RuntimeException("请核实id type");
+              }
+          }
+      
+          @Override
+          public Object getNewResult(JoinPoint joinPoint, EnableModifyLog enableModifyLog) {
+              return getOldResult(joinPoint,enableModifyLog);
+          }
 
 
 }
