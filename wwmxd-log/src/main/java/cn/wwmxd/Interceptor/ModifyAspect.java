@@ -99,11 +99,6 @@ public class ModifyAspect {
             if (enableModifyLog.needDefaultCompare()) {
                operateLog.setModifyContent(defaultDealUpdate(object,oldMap));
             }
-            //如果使用默认缓存 则需要更新到最新的数据
-            if(enableModifyLog.defaultCache()
-                    &&enableModifyLog.parseclass().equals(DefaultContentParse.class)){
-                defaultContentParse.updateCache(joinPoint,enableModifyLog,object);
-            }
         }else{
             //除了更新外,默认把返回的对象存储到log中
             operateLog.setNewObject(object);

@@ -44,8 +44,4 @@ public @interface EnableModifyLog {
      * @return id的类型
      */
     Class idType() default String.class;
-    /**
-     * @return 是否使用默认本地缓存
-     */
-    boolean defaultCache() default false;
 }
