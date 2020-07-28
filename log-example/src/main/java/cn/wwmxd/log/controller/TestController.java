@@ -18,13 +18,13 @@ import java.util.UUID;
 @RestController
 public class TestController {
 
-    @GetMapping("/test")
+    @GetMapping("/select")
     @EnableModifyLog(modifyType = ModifyName.GET,handleName = "查询",needDefaultCompare=true)
     public Example test(){
         return new Example();
     }
 
-    @PostMapping("/test")
+    @PostMapping("/save")
     @EnableModifyLog(modifyType = ModifyName.SAVE,handleName = "保存",needDefaultCompare=true)
     public Example saveTest(){
         Example example=new Example();
@@ -33,16 +33,16 @@ public class TestController {
         return example;
     }
 
-    @PutMapping("/test")
+    @PutMapping("/update")
     @EnableModifyLog(modifyType = ModifyName.UPDATE,serviceclass= ExampleService.class,handleName = "更新",needDefaultCompare=true)
     public Example updateTest(@RequestBody Example example){
         System.out.println(example);
         return example;
     }
 
-    @DeleteMapping("/test/{id}")
+    @DeleteMapping("/delete/{id}")
     @EnableModifyLog(modifyType = ModifyName.DELETE,serviceclass= ExampleService.class,handleName = "删除",needDefaultCompare=true)
-    public Example updateTest(@PathVariable String id){
+    public Example deleteTest(@PathVariable String id){
         System.out.println(id);
         return new Example();
     }
