@@ -8,9 +8,6 @@ import org.aspectj.lang.JoinPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import javax.annotation.PostConstruct;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * 基础解析类
  * 单表编辑时可以直接使用id来查询
@@ -27,7 +24,7 @@ public class DefaultContentParse implements ContentParser {
         Assert.notNull(id,"未解析到id值，请检查前台传递参数是否正确");
         Class idType=enableModifyLog.idType();
         if(idType.isInstance(id)){
-            Class cls=enableModifyLog.serviceclass();
+            Class cls=enableModifyLog.serviceClass();
             IService service = (IService) SpringUtil.getBean(cls);
             Object result=service.selectById(idType.cast(id));
             return  result;

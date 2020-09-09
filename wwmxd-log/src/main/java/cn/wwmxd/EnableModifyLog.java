@@ -1,5 +1,6 @@
 package cn.wwmxd;
 
+import cn.wwmxd.parser.ContentParser;
 import cn.wwmxd.parser.DefaultContentParse;
 import cn.wwmxd.service.IService;
 import cn.wwmxd.util.ModifyName;
@@ -23,12 +24,12 @@ public @interface EnableModifyLog {
      * @return 获取编辑信息的解析类，目前为使用id获取，复杂的解析需要自己实现，默认不填写
      *       则使用默认解析类
      */
-    Class parseclass() default DefaultContentParse.class;
+    Class<? extends ContentParser> parseClass() default DefaultContentParse.class;
 
     /**
      * @return 查询数据库所调用的class文件
      */
-    Class serviceclass() default IService.class;
+    Class<? extends IService> serviceClass() default IService.class;
 
     /**
      * @return 具体业务操作名称
@@ -43,5 +44,5 @@ public @interface EnableModifyLog {
     /**
      * @return id的类型
      */
-    Class idType() default String.class;
+    Class<?> idType() default String.class;
 }
