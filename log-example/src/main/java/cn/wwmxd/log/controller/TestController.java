@@ -34,14 +34,14 @@ public class TestController {
     }
 
     @PutMapping("/update")
-    @EnableModifyLog(modifyType = ModifyName.UPDATE,serviceclass= ExampleService.class,handleName = "更新",needDefaultCompare=true)
+    @EnableModifyLog(modifyType = ModifyName.UPDATE, serviceclass = ExampleService.class,handleName = "更新",needDefaultCompare=true)
     public Example updateTest(@RequestBody Example example){
         System.out.println(example);
         return example;
     }
 
     @DeleteMapping("/delete/{id}")
-    @EnableModifyLog(modifyType = ModifyName.DELETE,serviceclass= ExampleService.class,handleName = "删除",needDefaultCompare=true)
+    @EnableModifyLog(modifyType = ModifyName.DELETE, serviceclass = ExampleService.class,handleName = "删除",needDefaultCompare=true)
     public Example deleteTest(@PathVariable String id){
         System.out.println(id);
         return new Example();
